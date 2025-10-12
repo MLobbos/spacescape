@@ -22,7 +22,7 @@ dependencies:
   # flame_noise: 0.1.1
 
 dev_dependencies:
-  build_runner: 2.5.4
+  build_runner: 2.4.13
   flutter_test:
     sdk: flutter
   flutter_lints: 6.0.0
