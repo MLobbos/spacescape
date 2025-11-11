@@ -43,6 +43,21 @@ class Player extends SpriteComponent
   // Controls for how long multi-bullet power up is active.
   late Timer _powerUpTimer;
 
+  // Auto-fire timer; fires at a fixed interval.
+  late Timer _autoFireTimer;
+
+  // Fire rate in seconds between shots.
+  double fireIntervalSeconds = 0.25;
+
+  // Movement smoothing: current velocity.
+  Vector2 _velocity = Vector2.zero();
+  // Multiplikator für Basis-Speed des Raumschiffs.
+  double speedMultiplier = 1.4;
+  // Maximalgeschwindigkeit (wird aus Spaceship.speed * speedMultiplier gesetzt).
+  late double maxSpeed = _spaceship.speed * speedMultiplier;
+  // Dämpfungsfaktor für sanfte Annäherung (je höher desto schneller reagiert es).
+  double damping = 8.0;
+
   // Holds an object of Random class to generate random numbers.
   final _random = Random();
 
@@ -68,11 +83,26 @@ class Player extends SpriteComponent
         _shootMultipleBullets = false;
       },
     );
+
+    // Auto-fire every [fireIntervalSeconds].
+    _autoFireTimer = Timer(
+      fireIntervalSeconds,
+      onTick: () {
+        // Only fire if player is alive and mounted.
+        if (_health > 0 && isMounted) {
+          joystickAction();
+        }
+      },
+      repeat: true,
+    );
   }
 
   @override
   void onMount() {
     super.onMount();
+
+    // Start auto-fire when the player mounts.
+    _autoFireTimer.start();
 
     // Adding a circular hitbox with radius as 0.8 times
     // the smallest dimension of this components size.
@@ -113,7 +143,8 @@ class Player extends SpriteComponent
     LogicalKeyboardKey.keyA,
     LogicalKeyboardKey.keyS,
     LogicalKeyboardKey.keyD,
-    LogicalKeyboardKey.space,
+    // Removed space as a manual fire trigger
+    // LogicalKeyboardKey.space,
   };
 
   @override
@@ -124,12 +155,12 @@ class Player extends SpriteComponent
 
     if (!_keysWatched.contains(event.logicalKey)) return true;
 
-    if (event is KeyDownEvent &&
-        event is! KeyRepeatEvent &&
-        event.logicalKey == LogicalKeyboardKey.space) {
-      // pew pew!
-      joystickAction();
-    }
+    // Removed keyboard fire trigger
+    // if (event is KeyDownEvent &&
+    //     event is! KeyRepeatEvent &&
+    //     event.logicalKey == LogicalKeyboardKey.space) {
+    //   joystickAction();
+    // }
 
     if (keysPressed.contains(LogicalKeyboardKey.keyW)) {
       keyboardDelta.y = -1;
@@ -154,20 +185,39 @@ class Player extends SpriteComponent
     super.update(dt);
 
     _powerUpTimer.update(dt);
+    _autoFireTimer.update(dt);
 
-    // Increment the current position of player by (speed * delta time) along moveDirection.
-    // Delta time is the time elapsed since last update. For devices with higher frame rates, delta time
-    // will be smaller and for devices with lower frame rates, it will be larger. Multiplying speed with
-    // delta time ensure that player speed remains same irrespective of the device FPS.
+    // Zielrichtung aus Joystick oder Tastatur.
+    Vector2 inputDir = Vector2.zero();
     if (!joystick.delta.isZero()) {
-      position.add(joystick.relativeDelta * _spaceship.speed * dt);
+      inputDir = joystick.relativeDelta.clone();
+    } else if (!keyboardDelta.isZero()) {
+      inputDir = keyboardDelta.clone();
     }
 
-    if (!keyboardDelta.isZero()) {
-      position.add(keyboardDelta * _spaceship.speed * dt);
+    if (!inputDir.isZero()) {
+      // Normalisieren, damit diagonale Bewegungen nicht schneller werden.
+      if (inputDir.length > 1) {
+        inputDir.normalize();
+      }
+      final targetVel = inputDir * maxSpeed;
+      // Glättung per exponentieller Annäherung (kein klassisches a, aber wirkt wie weiche Beschleunigung).
+      final factor = 1 - exp(-damping * dt); // zwischen 0 und 1
+      _velocity += (targetVel - _velocity) * factor;
+    } else {
+      // Kein Input: Velocity sanft abbauen.
+      final decay = exp(-damping * dt);
+      _velocity *= decay;
+      // Sehr kleine Werte auf 0 setzen, um Flattern zu vermeiden.
+      if (_velocity.length2 < 0.01) {
+        _velocity.setZero();
+      }
     }
 
-    // Clamp position of player such that the player sprite does not go outside the screen size.
+    // Position aktualisieren.
+    position += _velocity * dt;
+
+    // Clamp position damit Spieler im Bildschirm bleibt.
     position.clamp(Vector2.zero() + size / 2, game.fixedResolution - size / 2);
 
     // Adds thruster particles.
@@ -261,6 +311,7 @@ class Player extends SpriteComponent
     _playerData!.currentScore = 0;
     _health = 100;
     position = game.fixedResolution / 2;
+    _velocity.setZero();
   }
 
   // Changes the current spaceship type with given spaceship type.
@@ -270,6 +321,7 @@ class Player extends SpriteComponent
     spaceshipType = spaceshipType;
     _spaceship = Spaceship.getSpaceshipByType(spaceshipType);
     sprite = game.spriteSheet.getSpriteById(_spaceship.spriteId);
+    maxSpeed = _spaceship.speed * speedMultiplier; // Recalculate for neues Schiff.
   }
 
   // Allows player to first multiple bullets for 4 seconds when called.

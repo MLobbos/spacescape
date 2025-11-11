@@ -22,6 +22,7 @@ import 'power_ups.dart';
 import 'enemy_manager.dart';
 import 'power_up_manager.dart';
 import 'audio_player_component.dart';
+import 'floating_joystick_area.dart';
 
 // This class is responsible for initializing and running the game-loop.
 class SpacescapeGame extends FlameGame
@@ -81,16 +82,19 @@ class SpacescapeGame extends FlameGame
 
       await add(world);
 
-      // Create a basic joystick component on left.
+      // Create a basic joystick component; position is dynamic via FloatingJoystickArea.
       final joystick = JoystickComponent(
-        anchor: Anchor.bottomLeft,
-        position: Vector2(30, fixedResolution.y - 30),
+        anchor: Anchor.center,
+        position: fixedResolution / 2,
         // size: 100,
         background: CircleComponent(
           radius: 60,
-          paint: Paint()..color = Colors.white.withValues(alpha: 0.5),
+          paint: Paint()..color = Colors.transparent,
         ),
-        knob: CircleComponent(radius: 30),
+        knob: CircleComponent(
+          radius: 30,
+          paint: Paint()..color = Colors.transparent,
+        ),
       );
 
       camera = CameraComponent.withFixedResolution(
@@ -129,16 +133,16 @@ class SpacescapeGame extends FlameGame
       _enemyManager = EnemyManager(spriteSheet: spriteSheet);
       _powerUpManager = PowerUpManager();
 
-      // Create a fire button component on right
-      final button = ButtonComponent(
-        button: CircleComponent(
-          radius: 60,
-          paint: Paint()..color = Colors.white.withValues(alpha: 0.5),
-        ),
-        anchor: Anchor.bottomRight,
-        position: Vector2(fixedResolution.x - 30, fixedResolution.y - 30),
-        onPressed: _player.joystickAction,
-      );
+      // Remove fire button: player will auto-shoot.
+      // final button = ButtonComponent(
+      //   button: CircleComponent(
+      //     radius: 60,
+      //     paint: Paint()..color = Colors.white.withValues(alpha: 0.5),
+      //   ),
+      //   anchor: Anchor.bottomRight,
+      //   position: Vector2(fixedResolution.x - 30, fixedResolution.y - 30),
+      //   onPressed: _player.joystickAction,
+      // );
 
       // Create text component for player score.
       _playerScore = TextComponent(
@@ -177,6 +181,9 @@ class SpacescapeGame extends FlameGame
         priority: -1,
       );
 
+      // Floating joystick area that repositions the joystick to finger.
+      final joystickArea = FloatingJoystickArea(joystick: joystick);
+
       // Makes the game use a fixed resolution irrespective of the windows size.
       await world.addAll([
         _audioPlayerComponent,
@@ -187,8 +194,9 @@ class SpacescapeGame extends FlameGame
 
       camera.backdrop.add(stars);
       camera.viewport.addAll([
+        joystickArea,
         joystick,
-        button,
+        // button, // Removed fire button
         healthBar,
         _playerScore,
         _playerHealth,

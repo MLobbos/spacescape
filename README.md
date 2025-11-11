@@ -1,94 +1,89 @@
-<div align="center" id="top"> 
-  <img src="./.github/spacescape_logo.png" alt="Spacescape" />
+# Spacescape
 
-  &#xa0;
+Ein rasanter 2D‑Top‑Down Space‑Shooter mit Flutter und der Flame‑Engine. Bewege dein Raumschiff durch Gegnerwellen, sammle Power‑Ups und jage deinen Highscore. Das Schiff feuert automatisch – du konzentrierst dich ganz auf Bewegung und Taktik.
 
-  <!-- <a href="https://spacescape.netlify.app">Demo</a> -->
-</div>
+## Inhalt
+- [Überblick](#überblick)
+- [Features](#features)
+- [Steuerung](#steuerung)
+- [Installation und Start](#installation-und-start)
+- [Technologien](#technologien)
+- [Geplante Erweiterungen (Roadmap)](#geplante-erweiterungen-roadmap)
+- [Mitmachen (Contributing)](#mitmachen-contributing)
+- [Lizenz](#lizenz)
+- [Credits](#credits)
 
-<!-- <h1 align="center">Spacescape</h1> -->
+## Überblick
+Spacescape ist ein arcadiger Endless‑Shooter. Dein Schiff bewegt sich frei über das Spielfeld, während Gegnerwellen einfliegen. Power‑Ups wie Mehrfachschuss helfen dir, länger zu überleben und mehr Punkte zu sammeln. Parallax‑Sterne, SFX und Musik sorgen für Atmosphäre.
 
-<p align="center">
-  <img alt="Github top language" src="https://img.shields.io/github/languages/top/ufrshubham/spacescape?color=56BEB8">
+## Features
+- Auto‑Fire: Dauerfeuer ohne Knopfdruck.
+- Unsichtbarer, frei positionierbarer Joystick (Floating): Er erscheint dort, wo du den Finger aufsetzt, und bleibt transparent für maximale Sicht.
+- Flüssige Bewegung: Sanfte Beschleunigung/Dämpfung und erhöhte Maximalgeschwindigkeit für ein geschmeidiges Handling.
+- Gegnerwellen, Treffererkennung und Health‑System.
+- Sammelbare Power‑Ups (z. B. Multi‑Fire, Heilung).
+- Score‑Tracking und UI‑Overlays (Pause, Game Over, Health‑Bar, Score).
+- Soundkulisse: Hintergrundmusik und SFX (Laser/Power‑Ups).
 
-  <img alt="Github language count" src="https://img.shields.io/github/languages/count/ufrshubham/spacescape?color=56BEB8">
+## Steuerung
+- Touch (Mobil/Tablet):
+  - Bewegung: Tippe irgendwo auf den Bildschirm. Der (unsichtbare) Joystick erscheint an dieser Stelle; durch Ziehen steuerst du die Richtung.
+  - Schießen: Automatisch, kein Button nötig.
+- Tastatur (Desktop):
+  - Bewegung: W, A, S, D
+  - Schießen: Automatisch
 
-  <img alt="Repository size" src="https://img.shields.io/github/repo-size/ufrshubham/spacescape?color=56BEB8">
+## Installation und Start
+Voraussetzungen: Aktuelles Flutter SDK.
 
-  <img alt="License" src="https://img.shields.io/github/license/ufrshubham/spacescape?color=56BEB8">
+```zsh
+# Projekt klonen
+git clone <dein-repo-oder-pfad>
+cd spacescape
 
-  <img alt="Github issues" src="https://img.shields.io/github/issues/ufrshubham/spacescape?color=56BEB8" />
+# Abhängigkeiten installieren
+flutter pub get
 
-  <img alt="Github forks" src="https://img.shields.io/github/forks/ufrshubham/spacescape?color=56BEB8" />
-
-  <img alt="Github stars" src="https://img.shields.io/github/stars/ufrshubham/spacescape?color=56BEB8" />
-</p>
-
-<!-- Status -->
-
-<h4 align="center"> 
-	🚧  Spacescape 🚀 Under construction...  🚧
-</h4> 
-
-<hr>
-
-<p align="center">
-  <a href="#dart-about">About</a> &#xa0; | &#xa0; 
-  <a href="#sparkles-features">Features</a> &#xa0; | &#xa0;
-  <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
-  <a href="#white_check_mark-requirements">Requirements</a> &#xa0; | &#xa0;
-  <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
-  <a href="#memo-license">License</a> &#xa0; | &#xa0;
-  <a href="https://github.com/ufrshubham" target="_blank">Author</a>
-</p>
-
-<br>
-
-## :dart: About ##
-
-Spacescape is a 2D top-down space shooter written in dart using Flutter and the awesome Flame engine.
-
-## :sparkles: Features ##
-
-:heavy_check_mark: It works! 😅
-
-## :rocket: Technologies ##
-
-The following tools were used in this project:
-
-- [Dart](https://dart.dev/)
-- [Flutter](https://flutter.dev/)
-- [Flame Engine](https://flame-engine.org/)
-
-## :white_check_mark: Requirements ##
-
-Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) and [Flutter](https://flutter.dev/) installed.
-
-## :checkered_flag: Starting ##
-
-```bash
-# Clone this project
-$ git clone https://github.com/ufrshubham/spacescape
-
-# Access
-$ cd spacescape
-
-# Install dependencies
-$ flutter pub get
-
-# Run the project
-$ flutter run
-
-# The server will run the game on any connect and supported device.
+# App starten (verbundenes Gerät/Emulator/Simulator)
+flutter run
 ```
 
-## :memo: License ##
+Tipps:
+- iOS: Bei Bedarf Pods installieren/mit Xcode öffnen und auf Simulator/Device starten.
+- Web/Desktop: Optional mit `flutter run -d chrome` bzw. `-d macos/windows/linux` starten.
 
-This project is under license from MIT. For more details, see the [LICENSE](LICENSE) file.
+## Technologien
+- Dart + Flutter
+- Flame Engine (Komponenten, Parallax, Input, Audio, Kollisionen)
 
+Wichtige Dateien:
+- Game‑Loop: `lib/game/game.dart`
+- Spieler & Steuerung: `lib/game/player.dart`, `lib/game/floating_joystick_area.dart`
+- Gegner & Power‑Ups: `lib/game/enemy_manager.dart`, `lib/game/power_up_manager.dart`
+- Modelle/Spielerdaten: `lib/models/*`
 
-Made with :brain: by <a href="https://github.com/ufrshubham" target="_blank">Ryuzaki</a>
+## Geplante Erweiterungen (Roadmap)
+- Mehr Gegnertypen und Bosskämpfe (Muster, besondere Fähigkeiten)
+- Level‑Fortschritt, Missionen/Ziele, Wellen‑Design
+- Upgrades & Economy (Schiffs‑Upgrades, neue Waffen, Shop)
+- Weitere Power‑Ups (Schild, Zeitlupe, Orbit‑Drohnen, Railgun)
+- Einstellungen: Joystick‑Empfindlichkeit/Dead‑Zone, Haptik, Audio‑Lautstärke, Barrierefreiheit
+- Leaderboard/Cloud‑Save (z. B. Firebase), Achievements
+- Visuelle Effekte: Treffer‑Feedback, Partikel‑Feinschliff, Screen‑Shake/Kameraeffekte
+- Performance‑Optimierung & Tests (Profiling, Asset‑Atlas, Objekt‑Pooling)
+- Lokalisierung (weitere Sprachen)
 
-&#xa0;
+## Mitmachen (Contributing)
+Beiträge sind willkommen!
+- Bugs/Ideen als Issue melden
+- Pull Requests mit klarer Beschreibung (Was/Warum/Wie getestet?)
+- Vorab bitte `flutter analyze` ausführen und bestehenden Stil übernehmen
 
-<a href="#top">Back to top</a>
+## Lizenz
+Dieses Projekt steht unter der MIT‑Lizenz. Siehe [LICENSE](LICENSE).
+
+## Credits
+- Flame‑Team für die großartige Game‑Engine
+- Ursprungsideen/Assets inspiriert durch das Open‑Source‑Projekt „Spacescape“ (Ryuzaki/ufrshubham)
+
+Viel Spaß beim Zocken und Entwickeln – Feedback und Wünsche gerne als Issue einreichen!
